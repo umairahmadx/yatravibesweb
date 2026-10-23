@@ -13,7 +13,7 @@ import { EASE } from "./motion";
  * with a real URL and switch `DEMO_MODE` off to send for real.
  * ---------------------------------------------------------------------------
  */
-const ENQUIRY_ENDPOINT = ""; // e.g. "https://api.example.com/api/enquiries"
+const ENQUIRY_ENDPOINT = ""; // e.g. "https://api.yourdomain.tld/api/enquiries"
 const DEMO_MODE = true;
 
 const inputCls =

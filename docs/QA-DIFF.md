@@ -106,7 +106,7 @@ Page heights measured again after the pass, with Playwright at the same viewport
 What changed (no layout/typography/colour change):
 
 - `src/lib/site.ts` — single `SITE_URL` constant; canonical, `og:url`, `twitter:url`,
-  JSON-LD `url`/`@id` and `abs()` all derive from it. No `example.com` anywhere.
+  JSON-LD `url`/`@id` and `abs()` all derive from it. No placeholder domain remains in the repo.
 - `public/robots.txt` + `public/sitemap.xml` (one `<url>`, `lastmod` 2026-10-23).
 - JSON-LD is one `@graph`: `TravelAgency`+`LocalBusiness`, `WebSite`, `Organization`.
   Only fields that appear on the page (name, url, phone, email, New Delhi, India, logo,
