@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "sonner";
 import { X, Send } from "lucide-react";
@@ -40,6 +40,11 @@ export default function EnquiryModal({ open, onClose, presetCar = "", presetDest
   const [form, setForm] = useState({ ...emptyForm });
   const [sending, setSending] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const panelRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLElement | null>(null);
+  // Keeps the focus-trap effect stable even if the parent passes an inline onClose.
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
 
   useEffect(() => {
     if (open) {
@@ -47,15 +52,61 @@ export default function EnquiryModal({ open, onClose, presetCar = "", presetDest
     }
   }, [open, presetCar, presetDestination]);
 
-  // Escape closes (added in the rebuild — the original only closed on X/backdrop).
+  /**
+   * Dialog keyboard/focus contract (added in the rebuild — the original only
+   * closed on X/backdrop): focus moves into the panel on open, Tab/Shift+Tab
+   * cycle inside it, Escape closes, and focus returns to the trigger on close.
+   */
   useEffect(() => {
     if (!open) return;
+
+    triggerRef.current = document.activeElement as HTMLElement | null;
+
+    const focusable = () =>
+      Array.from(
+        panelRef.current?.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        ) ?? [],
+      ).filter((el) => el.offsetParent !== null || el === document.activeElement);
+
+    const raf = requestAnimationFrame(() => {
+      const first = panelRef.current?.querySelector<HTMLElement>('[data-testid="enquiry-name-input"]');
+      (first ?? focusable()[0] ?? panelRef.current)?.focus();
+    });
+
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") {
+        e.stopPropagation();
+        onCloseRef.current();
+        return;
+      }
+      if (e.key !== "Tab") return;
+      const items = focusable();
+      if (items.length === 0) {
+        e.preventDefault();
+        panelRef.current?.focus();
+        return;
+      }
+      const first = items[0];
+      const last = items[items.length - 1];
+      const active = document.activeElement as HTMLElement | null;
+      const inside = !!active && !!panelRef.current?.contains(active);
+      if (e.shiftKey && (active === first || !inside)) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && (active === last || !inside)) {
+        e.preventDefault();
+        first.focus();
+      }
     };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [open, onClose]);
+
+    document.addEventListener("keydown", onKey, true);
+    return () => {
+      cancelAnimationFrame(raf);
+      document.removeEventListener("keydown", onKey, true);
+      triggerRef.current?.focus?.();
+    };
+  }, [open]);
 
   const set = (k: keyof typeof emptyForm) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
     setForm({ ...form, [k]: e.target.value });
@@ -122,6 +173,8 @@ export default function EnquiryModal({ open, onClose, presetCar = "", presetDest
           aria-labelledby="enquiry-title"
         >
           <motion.div
+            ref={panelRef}
+            tabIndex={-1}
             initial={{ y: 50, opacity: 0, scale: 0.97 }}
             animate={{ y: 0, opacity: 1, scale: 1 }}
             exit={{ y: 30, opacity: 0, scale: 0.97 }}

@@ -25,7 +25,16 @@ export default function Navbar({ onBook }: { onBook: () => void }) {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-16 h-16 flex items-center justify-between">
         <a href="#top" data-testid="nav-logo" className="flex items-center gap-3">
-          <img src="/img/logo-emblem-light.png" alt="YatraVibes logo" width={493} height={237} className="h-9 w-auto" />
+          {/* Decorative: the brand name is real text right beside it. */}
+          <img
+            src="/img/logo-emblem-light.png"
+            alt=""
+            aria-hidden="true"
+            width={493}
+            height={237}
+            decoding="async"
+            className="h-9 w-auto"
+          />
           <span className="font-display font-extrabold tracking-tight text-lg uppercase">
             Yatra<span className="text-[#E2A855]">Vibes</span>
           </span>

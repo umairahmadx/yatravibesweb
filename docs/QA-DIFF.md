@@ -97,3 +97,33 @@ the same `object-cover` framing, the same clipped-frame corner and the same type
 
 - Deliberately deferred to the SEO/a11y pass: robots.txt, sitemap.xml, canonical/OG, JSON-LD, srcset, focus trap.
 - The documented `prefers-reduced-motion` deviation (the original ignores the setting; we honour it) remains.
+
+## SEO + accessibility pass (2026-10-23) — visual fidelity re-verified
+
+Page heights measured again after the pass, with Playwright at the same viewports:
+**1440 → 5019 px, 1024 → 5212 px, 390 → 6867 px** — unchanged from the numbers above.
+
+What changed (no layout/typography/colour change):
+
+- `src/lib/site.ts` — single `SITE_URL` constant; canonical, `og:url`, `twitter:url`,
+  JSON-LD `url`/`@id` and `abs()` all derive from it. No `example.com` anywhere.
+- `public/robots.txt` + `public/sitemap.xml` (one `<url>`, `lastmod` 2026-10-23).
+- JSON-LD is one `@graph`: `TravelAgency`+`LocalBusiness`, `WebSite`, `Organization`.
+  Only fields that appear on the page (name, url, phone, email, New Delhi, India, logo,
+  the two cars and four trip types). No ratings, reviews, prices or coordinates.
+- `src/lib/image.ts` + 18 WebP derivatives generated from `recon/originals` (480/768/
+  1080/1440). All 7 photographs now ship `srcset`/`sizes` with explicit width/height;
+  hero is `loading="eager" decoding="async" fetchpriority="high"`, everything below the
+  fold is `loading="lazy" decoding="async"`.
+- Fonts: preload only Syne, Plus Jakarta Sans and JetBrains Mono (the three used above
+  the fold); the italic and the 500/700 JetBrains files are not preloaded.
+- Modal: `role="dialog"`, `aria-modal="true"`, `aria-labelledby="enquiry-title"`, focus
+  moves to the first field on open, Tab/Shift+Tab are trapped (40-tab walk, 0 escapes),
+  Esc closes, focus returns to the trigger.
+- Marquee: `aria-hidden` moved from the whole strip to the duplicated copy only, so the
+  words are announced once. Both groups are flex siblings of equal width — pixel output
+  is identical.
+- Navbar logo is now decorative (`alt=""`, `aria-hidden`) because the brand name is real
+  text next to it; footer logo keeps its descriptive alt.
+- Heading outline verified in the rendered DOM: one `<h1>`, four `<h2>` (one per
+  section), ten `<h3>` (4 manifesto chapters + 2 cars + 4 destinations).

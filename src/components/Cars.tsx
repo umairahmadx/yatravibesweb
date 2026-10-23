@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Users, Luggage, Fuel, ArrowUpRight } from "lucide-react";
 import { useReveal } from "./motion";
+import { srcSet, CAR_SIZES } from "~/lib/image";
 
 const cars = [
   {
@@ -73,6 +74,8 @@ export default function Cars({ onBook }: { onBook: (car: string) => void }) {
               <div className="clipped-frame relative h-64 sm:h-80 overflow-hidden m-4 mb-0">
                 <img
                   src={car.img}
+                  srcSet={srcSet(car.img, car.w)}
+                  sizes={CAR_SIZES}
                   alt={`${car.name} — ${car.tag}`}
                   width={car.w}
                   height={car.h}

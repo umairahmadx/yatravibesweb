@@ -2,8 +2,11 @@ import { useRef } from "react";
 import { motion, useScroll, useTransform, useMotionValue, useSpring, useReducedMotion } from "framer-motion";
 import { ArrowDown, ArrowUpRight } from "lucide-react";
 import { EASE } from "./motion";
+import { srcSet, HERO_SIZES } from "~/lib/image";
 
 const HERO_IMG = "/img/hero-mountain-road.webp";
+const HERO_W = 1920;
+const HERO_H = 2880;
 
 const lines = ["DRIVE.", "EXPLORE.", "EXPERIENCE."];
 
@@ -41,9 +44,13 @@ export default function Hero({ onBook }: { onBook: () => void }) {
       <motion.div style={{ y: bgY, x: sx }} className="absolute inset-[-3%]">
         <motion.img
           src={HERO_IMG}
+          srcSet={srcSet(HERO_IMG, HERO_W)}
+          sizes={HERO_SIZES}
           alt="Mountain road drive"
-          width={1920}
-          height={2880}
+          width={HERO_W}
+          height={HERO_H}
+          loading="eager"
+          decoding="async"
           fetchPriority="high"
           initial={reduced ? { scale: 1, opacity: 1 } : { scale: 1.15, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}

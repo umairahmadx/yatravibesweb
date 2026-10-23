@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import HomePage from "~/components/HomePage";
-import { SITE_URL, SITE_NAME, SITE_TITLE, SITE_DESCRIPTION, SITE_TAGLINE, abs } from "~/site";
+import { SITE_URL, SITE_NAME, SITE_TITLE, SITE_DESCRIPTION, SITE_TAGLINE, abs } from "~/lib/site";
 
 const CANONICAL = `${SITE_URL}/`;
 const OG_IMAGE = abs("/img/hero-mountain-road.webp");
@@ -61,6 +61,7 @@ export const Route = createFileRoute("/")({
       { property: "og:image:alt", content: OG_IMAGE_ALT },
       { property: "og:locale", content: "en_IN" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:url", content: CANONICAL },
       { name: "twitter:title", content: SITE_TITLE },
       { name: "twitter:description", content: SITE_DESCRIPTION },
       { name: "twitter:image", content: OG_IMAGE },

@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { ArrowUpRight, Clock } from "lucide-react";
 import { useReveal } from "./motion";
+import { srcSet, TRIP_SIZES } from "~/lib/image";
 
 const trips = [
   {
@@ -70,6 +71,8 @@ export default function Destinations({ onBook }: { onBook: (destination: string)
             >
               <img
                 src={t.img}
+                srcSet={srcSet(t.img, t.w)}
+                sizes={TRIP_SIZES}
                 alt={`${t.title} — ${t.duration} trip`}
                 width={t.w}
                 height={t.h}
