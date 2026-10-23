@@ -1,9 +1,6 @@
-# YatraVibes — static React rebuild
+# YatraVibes — Static React Build
 
-A hand-built, pre-rendered React rebuild of the YatraVibes travel site (`travel-trusted-5.emergent.host`),
-recreated screen-for-screen from the original's own source code and assets — but shipped as a
-**server-rendered / statically pre-rendered site**, so the full content is in the HTML that search
-engines and social crawlers receive (the original was a client-only SPA that returned an empty shell).
+A hand-built, pre-rendered React rebuild of the YatraVibes travel site, recreating the design and components in React with Vite & TanStack Router.
 
 ## What's in here
 
@@ -24,54 +21,34 @@ src/
     GrainOverlay.tsx  film-grain overlay
     HomePage.tsx      page composition + Lenis smooth scroll + toaster state
     motion.ts         shared easings and the reveal hook
-  styles/app.css      design tokens, the original's custom utility classes, @font-face
+  styles/app.css      design tokens, custom utility classes, @font-face
 public/
-  img/                all photography + logos (WebP / PNG) — nothing hot-linked
-  fonts/              self-hosted Syne, Plus Jakarta Sans, JetBrains Mono (woff2)
-docs/QA-DIFF.md       the measured fidelity report (reference vs this build)
+  img/                all photography + logos (WebP / PNG)
+  fonts/              self-hosted fonts (woff2)
+docs/QA-DIFF.md       fidelity report
 ```
 
-## Run it
+## Local Development
 
-Requires [Bun](https://bun.sh).
+Requires [Bun](https://bun.sh) or Node.js.
 
 ```bash
 bun install
-bun run dev      # local dev server
-bun run build    # production build
-bun run start    # serve the production build
+bun run dev          # local dev server
+bun run build:pages  # static build for deployment
+bun run start        # serve locally
 ```
 
-## Fidelity
+## Deploying to Cloudflare Pages
 
-Measured against the live reference in the same headless Chromium:
+To deploy this site on Cloudflare Pages:
 
-| viewport | reference page height | this build |
-|---|---|---|
-| 1440 px | 5019 px | 5019 px |
-| 1024 px | 5212 px | 5212 px |
-| 390 px  | 6867 px | 6867 px |
+1. Go to **Cloudflare Pages** -> **Create a project** -> **Connect to Git**.
+2. Select your repository (`yatravibesweb`).
+3. Set the following **Build Settings**:
+   - **Framework preset**: `None` (or `Vite`)
+   - **Build command**: `bun run build:pages` (or `npm run build:pages`)
+   - **Build output directory**: `dist/client`
+4. Click **Save and Deploy**.
 
-Section heights, type sizes, tracking, line-heights, colours and image framing were compared element
-by element — see `docs/QA-DIFF.md` for the table, the two deviations found (both Tailwind v4 line-height
-cascade differences) and their fixes.
-
-## Deliberate differences from the original
-
-1. **Pre-rendered HTML + real SEO head** — proper `<title>`, meta description, canonical, Open Graph /
-   Twitter tags and JSON-LD. The original shipped `<title>Emergent | Fullstack App</title>`.
-2. **`prefers-reduced-motion` is respected** — smooth scrolling is skipped and reveals resolve to their
-   final state. The original ignored the setting.
-3. **The enquiry form does not fake a submission.** The original posted to a backend that isn't
-   deployed and always errored. This build validates the form and, in demo mode, tells the user the
-   enquiry was *not* sent and points at phone/WhatsApp. Set `ENQUIRY_ENDPOINT` and turn off `DEMO_MODE`
-   in `src/components/EnquiryModal.tsx` to wire a real endpoint.
-4. **`/admin` is not included.** The original's enquiries dashboard requires a backend login that
-   doesn't exist here; the footer link is kept for visual fidelity only.
-5. **Esc closes the modal** and validation messages are inline (the original relied on bare HTML5
-   `required`).
-
-## Rights
-
-The copy, photography, logo and contact details come from the YatraVibes site. Confirm you own or are
-licensed to use them before publishing this under your own name and domain.
+Cloudflare Pages will build the site, generate pre-rendered static HTML (`index.html`) with complete SEO meta tags, and serve it via Cloudflare CDN.
